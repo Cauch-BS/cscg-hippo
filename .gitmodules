@@ -1,0 +1,6 @@
+[submodule "vr2p"]
+	path = vr2p
+	url = https://github.com/NABI-SNU/vr2p-public
+[submodule "cscg"]
+	path = cscg
+	url = https://github.com/NABI-SNU/cscg
