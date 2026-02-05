@@ -17,13 +17,10 @@
           targetPkgs = pkgs: [
             pkgs.pixi
             pkgs.git
-            pkgs.cacert
+            pkgs.cacert   
           ];
-
-          runScript = "bash";
         };
-      in
-      {
+      in {
         devShell = fhs.env;
       }
     );

@@ -204,6 +204,11 @@ pyrightconfig.json
 
 # zar datasets
 *.zarr/
+
 # pixi environments
 .pixi/*
 !.pixi/config.toml
+
+#numpy datasets
+*.npz
+*.npy
