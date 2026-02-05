@@ -12,6 +12,7 @@ old = { features = ["old"], no-default-feature = true }
 python = "3.13.*"
 numpy = "*"
 zarr = "*"
+pre-commit = ">=4.5.1,<5"
 
 [feature.old.dependencies]
 python = "3.10.*"

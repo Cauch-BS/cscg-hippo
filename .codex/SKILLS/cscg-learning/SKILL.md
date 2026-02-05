@@ -36,10 +36,10 @@ plt.ylabel('Negative Log-Likelihood')
 def train_with_tracking(chmm, x, a, n_iter=100, snapshot_iters=[0, 10, 25, 50, 100]):
     """Train CHMM and capture snapshots at specified iterations."""
     snapshots = []
-    
+
     for i in range(n_iter):
         progression = chmm.learn_em_T(x, a, n_iter=1, term_early=False)
-        
+
         if i in snapshot_iters:
             # Save model snapshot
             snapshots.append({
@@ -47,7 +47,7 @@ def train_with_tracking(chmm, x, a, n_iter=100, snapshot_iters=[0, 10, 25, 50, 1
                 'chmm': copy.deepcopy(chmm),
                 'nll': progression[-1] if len(progression) > 0 else None
             })
-    
+
     return snapshots
 ```
 
@@ -73,25 +73,25 @@ chmm.learn_viterbi_T(x, a, n_iter=100)
 def get_mess_fwd(chmm, x, pseudocount=0.0, pseudocount_E=0.1):
     """Compute forward messages for state probability analysis."""
     from cscg import forwardE
-    
+
     n_clones = chmm.n_clones
     E = np.zeros((n_clones.sum(), len(n_clones)))
     last = 0
     for c in range(len(n_clones)):
         E[last : last + n_clones[c], c] = 1
         last += n_clones[c]
-    
+
     E += pseudocount_E
     norm = E.sum(1, keepdims=True)
     norm[norm == 0] = 1
     E /= norm
-    
+
     T = chmm.C + pseudocount
     norm = T.sum(2, keepdims=True)
     norm[norm == 0] = 1
     T /= norm
     T = T.mean(0, keepdims=True)
-    
+
     log2_lik, mess_fwd = forwardE(
         T.transpose(0, 2, 1),
         E,
@@ -101,7 +101,7 @@ def get_mess_fwd(chmm, x, pseudocount=0.0, pseudocount_E=0.1):
         x * 0,
         store_messages=True
     )
-    
+
     return mess_fwd
 ```
 
@@ -130,7 +130,7 @@ def compute_trial_correlations(mess_fwd, trials, tr_len):
     """Compute correlation matrix between trials."""
     n_trials = len(trials)
     corrplot = np.zeros((n_trials, n_trials))
-    
+
     for trial1 in range(n_trials):
         for trial2 in range(trial1, n_trials):
             comp1 = mess_fwd[trial1 * tr_len : (trial1 + 1) * tr_len, :]
@@ -139,7 +139,7 @@ def compute_trial_correlations(mess_fwd, trials, tr_len):
                 comp1.flatten(),
                 comp2.flatten()
             )[0]
-    
+
     # Fill symmetric part
     corrplot = corrplot + corrplot.T - np.diag(np.diag(corrplot))
     return corrplot
@@ -189,16 +189,16 @@ def visualize_learning_progression(chmm_snapshots, x, a, output_dir='figures'):
     for snapshot in chmm_snapshots:
         chmm_curr = snapshot['chmm']
         iter_num = snapshot['iteration']
-        
+
         # Extract and plot graph
         states = chmm_curr.decode(x, a)[1]
         v = np.unique(states)
         T = chmm_curr.C[:, v][:, :, v]
         A = T.sum(0)
         A /= A.sum(1, keepdims=True)
-        
+
         g = igraph.Graph.Adjacency((A > 0).tolist())
-        
+
         igraph.plot(
             g,
             f"{output_dir}/graph_iter_{iter_num}.pdf",
@@ -218,23 +218,23 @@ def track_graph_stats(chmm_snapshots, x, a):
         'n_edges': [],
         'avg_degree': []
     }
-    
+
     for snapshot in chmm_snapshots:
         chmm_curr = snapshot['chmm']
         states = chmm_curr.decode(x, a)[1]
         v = np.unique(states)
-        
+
         T = chmm_curr.C[:, v][:, :, v]
         A = T.sum(0)
         A /= A.sum(1, keepdims=True)
-        
+
         g = igraph.Graph.Adjacency((A > 0).tolist())
-        
+
         stats['iterations'].append(snapshot['iteration'])
         stats['n_states'].append(len(v))
         stats['n_edges'].append(g.ecount())
         stats['avg_degree'].append(np.mean(g.degree()))
-    
+
     return stats
 ```
 
@@ -287,7 +287,7 @@ snapshots = []
 for tot_iter in range(0, 26):
     n_iter = 10
     progression = chmm.learn_em_T(x, a, n_iter=n_iter, term_early=False)
-    
+
     if tot_iter in [0, 5, 10, 25]:
         mess_fwd = get_mess_fwd(chmm, x, pseudocount_E=0.1)
         # Compute correlations, visualize, etc.
@@ -310,7 +310,7 @@ def create_learning_dashboard(snapshots, mess_fwd_history, corr_history):
     """Create multi-panel dashboard showing learning progression."""
     fig = plt.figure(figsize=(16, 12))
     gs = GridSpec(3, 2, figure=fig)
-    
+
     # Learning curve
     ax1 = fig.add_subplot(gs[0, :])
     iterations = [s['iteration'] for s in snapshots]
@@ -319,19 +319,19 @@ def create_learning_dashboard(snapshots, mess_fwd_history, corr_history):
     ax1.set_xlabel('Iteration')
     ax1.set_ylabel('Negative Log-Likelihood')
     ax1.set_title('Learning Curve')
-    
+
     # Correlation evolution
     ax2 = fig.add_subplot(gs[1, 0])
     # Plot correlation matrices at different iterations
-    
+
     # Graph evolution
     ax3 = fig.add_subplot(gs[1, 1])
     # Show graph statistics over time
-    
+
     # State probability heatmap
     ax4 = fig.add_subplot(gs[2, :])
     # Show mess_fwd as heatmap
-    
+
     plt.tight_layout()
     return fig
 ```

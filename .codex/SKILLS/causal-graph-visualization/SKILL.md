@@ -40,18 +40,18 @@ def extract_transition_graph(chmm, x, a, multiple_episodes=False):
     """Extract transition graph from trained CHMM."""
     states = chmm.decode(x, a)[1]
     v = np.unique(states)
-    
+
     if multiple_episodes:
         # For multi-episode data, exclude first state
         T = chmm.C[:, v][:, :, v][:-1, 1:, 1:]
         v = v[1:]
     else:
         T = chmm.C[:, v][:, :, v]
-    
+
     # Aggregate over actions and normalize
     A = T.sum(0)  # Sum over actions
     A /= A.sum(1, keepdims=True)  # Normalize rows
-    
+
     return A, v
 ```
 
@@ -72,30 +72,30 @@ g = igraph.Graph.Adjacency((A > 0).tolist())  # Binary adjacency
 import matplotlib.pyplot as plt
 from matplotlib import cm, colors
 
-def plot_graph(chmm, x, a, output_file, cmap=cm.Spectral, 
+def plot_graph(chmm, x, a, output_file, cmap=cm.Spectral,
                multiple_episodes=False, vertex_size=30):
     """Plot learned cognitive map as a graph."""
     states = chmm.decode(x, a)[1]
     v = np.unique(states)
-    
+
     if multiple_episodes:
         T = chmm.C[:, v][:, :, v][:-1, 1:, 1:]
         v = v[1:]
     else:
         T = chmm.C[:, v][:, :, v]
-    
+
     A = T.sum(0)
     A /= A.sum(1, keepdims=True)
-    
+
     g = igraph.Graph.Adjacency((A > 0).tolist())
-    
+
     # Color nodes by observation/clone
     node_labels = np.arange(x.max() + 1).repeat(n_clones)[v]
     if multiple_episodes:
         node_labels -= 1
-    
+
     colors = [cmap(nl)[:3] for nl in node_labels / node_labels.max()]
-    
+
     igraph.plot(
         g,
         output_file,

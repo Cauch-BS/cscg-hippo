@@ -198,8 +198,8 @@ pyrightconfig.json
 
 # ignore models for now
 *.pt
-*.pth 
-*.bin 
+*.pth
+*.bin
 *.safetensors
 
 # zar datasets
