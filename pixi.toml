@@ -13,8 +13,13 @@ python = "3.13.*"
 numpy = "*"
 zarr = "*"
 pre-commit = ">=4.5.1,<5"
+ipykernel = ">=7.1.0,<8"
 
 [feature.old.dependencies]
 python = "3.10.*"
 numpy = "<2.0"
 zarr = "<3.0"
+ipykernel = "*"
+
+[feature.old.pypi-dependencies]
+vr2p = { path = "vr2p", editable = true }
