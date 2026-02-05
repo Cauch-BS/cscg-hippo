@@ -201,3 +201,9 @@ pyrightconfig.json
 *.pth 
 *.bin 
 *.safetensors
+
+# zar datasets
+*.zarr/
+# pixi environments
+.pixi/*
+!.pixi/config.toml
