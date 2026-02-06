@@ -2,7 +2,7 @@ import numpy as np
 import umap
 
 dataset: dict[str, np.ndarray] = np.load(
-        file = "./dataset.npz",
+        file = "./vr2p_extracted_signals.npz",
         mmap_mode = "r",
         allow_pickle = False,  
 )
