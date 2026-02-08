@@ -1,12 +1,13 @@
 import numpy as np
 import umap
 
-dataset: dict[str, np.ndarray] = np.load(
-        file = "./vr2p_extracted_signals.npz",
+
+spks_big_array: dict[str, np.ndarray] = np.load(
+        file = "./spk_data.npy",
         mmap_mode = "r",
         allow_pickle = False,  
 )
-spks_big_array: np.ndarray     = dataset["spks"]
+
 seed: int = 42
 
 umap_data= umap.UMAP(
