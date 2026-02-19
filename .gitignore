@@ -212,3 +212,6 @@ pyrightconfig.json
 #numpy datasets
 *.npz
 *.npy
+*.pkl*
+*.gz
+*.parquet
